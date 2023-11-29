@@ -79,14 +79,14 @@ nav ul li a:hover::after {
     justify-content: space-between;
     flex-wrap: wrap;
 }
-.about-col-1 {
+.alpha {
     flex-basis: 35%;
 }
-.about-col-1 img {
+.alpha img {
     width: 100%;
     border-radius: 15px;
 }
-.about-col-2 {
+.bravo {
     flex-basis: 60%;
 
 }
