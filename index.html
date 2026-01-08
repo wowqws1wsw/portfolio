@@ -1,163 +1,411 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Muhammad Arfan Naqi | Portfolio</title>
-  <link rel="stylesheet" href="project2.css">
-  <script src="https://kit.fontawesome.com/4ff41ebcaa.js" crossorigin="anonymous"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Muhammad Arfan Naqi — Portfolio (Animated + Parallax + Modal + Theme)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    :root{
+      --bg-900: #07071a;--bg-800: #0f1330;--primary: #ff4d73;--accent: #40e0d0;--muted: #bfc8d6;--card: rgba(255,255,255,0.04);--glass: rgba(255,255,255,0.04);--radius:12px;--transition:250ms ease;--max-width:1100px;color-scheme:dark;
+    }
+
+    [data-theme="light"]{
+      --bg-900: #f7fafc;--bg-800: #e6eef6;--primary:#ff2e63;--accent:#0077cc;--muted:#334155;--card:rgba(0,0,0,0.04);--glass:rgba(0,0,0,0.02);color-scheme:light;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-900) 0%, var(--bg-800) 100%);color:var(--muted);-webkit-font-smoothing:antialiased;line-height:1.45}
+    .site-wrap{max-width:var(--max-width);margin:0 auto;padding:0 20px}
+
+    header nav{position:fixed;left:0;right:0;top:0;z-index:999;background:linear-gradient(180deg, rgba(7,7,26,0.9), rgba(7,7,26,0.65));backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:12px 0}
+    [data-theme="light"] header nav{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));border-color:rgba(0,0,0,0.06)}
+
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:1rem;margin:0;color:var(--accent)}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;font-weight:600;font-size:0.95rem}
+    .nav-links a:hover{color:var(--primary)}
+    .btn-ghost{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--muted);font-weight:600}
+
+    .controls{display:flex;gap:10px;align-items:center}
+    .theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;cursor:pointer}
+
+    .menu-toggle{display:none;background:transparent;border:0;color:var(--muted)}
+
+    /* HERO with parallax background layer */
+    .hero{height:88vh;display:grid;place-items:center;text-align:center;padding-top:60px;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background-image:url('hero-bg.jpg');background-size:cover;background-position:center;transform:translateZ(0);will-change:transform;opacity:0.08}
+    .hero .intro{max-width:820px;position:relative;z-index:2}
+    .hero p.lead{color:var(--accent);margin-bottom:12px;font-weight:600}
+    .hero h2{font-size:clamp(1.6rem,3.5vw,3.2rem);margin:8px 0;color:var(--muted)}
+    .hero .cta{margin-top:18px;display:flex;gap:12px;justify-content:center}
+
+    .section{padding:4rem 0}
+    .about-row{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:center}
+    .avatar{border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);transform-origin:center}
+    .avatar img{display:block;width:100%;height:100%;object-fit:cover}
+    .about-card{background:var(--card);padding:20px;border-radius:12px;color:var(--muted)}
+    [data-theme="light"] .about-card{background:var(--card)}
+    .about-card h3{color:var(--accent);margin-top:0}
+
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .tab-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+    .tab-btn.is-active{background:linear-gradient(90deg,var(--primary),#ff8aa6);color:white;border:none}
+
+    .skills{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px}
+    .skill{min-width:160px;background:rgba(255,255,255,0.03);padding:12px;border-radius:10px}
+    .skill h4{margin:0 0 6px 0;color:var(--accent)}
+    .bar{height:8px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+    .bar > span{display:block;height:100%;border-radius:999px;width:0}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .card{background:var(--glass);padding:0;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;transition:transform var(--transition);box-shadow:0 6px 20px rgba(0,0,0,0.05)}
+    .card:focus{outline:3px solid rgba(64,224,208,0.12);outline-offset:6px}
+    .card img{width:100%;height:170px;object-fit:cover;display:block;transform:translateZ(0)}
+    .card .meta{padding:14px}
+    .card h4{margin:0 0 6px 0;color:var(--accent)}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* Modal styles */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.65);backdrop-filter:blur(6px);z-index:2000;visibility:hidden;opacity:0;transition:opacity 0.22s ease,visibility 0.22s}
+    .modal.open{visibility:visible;opacity:1}
+    .modal-dialog{background:var(--card);border-radius:12px;max-width:760px;width:94%;overflow:hidden;box-shadow:0 20px 60px rgba(2,6,23,0.6);transform:translateY(12px);}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .modal-body{display:flex;gap:12px;padding:14px}
+    .modal-body img{width:42%;height:180px;object-fit:cover;border-radius:8px}
+    .modal-content{flex:1}
+    .modal-close{background:transparent;border:0;padding:8px;cursor:pointer}
+
+    .contact-center{text-align:center}
+    .socials{display:inline-flex;gap:14px}
+    .socials a{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent}
+
+    footer{padding:28px 0;text-align:center;color:var(--muted);font-size:0.9rem}
+
+    @media (max-width:880px){.about-row{grid-template-columns:1fr}.hero{padding:80px 0 60px}.nav-links{display:none}.menu-toggle{display:inline-flex}.modal-body{flex-direction:column}.modal-body img{width:100%;height:220px}.modal-content{padding-top:8px}}
+
+    a:focus{outline:3px solid rgba(64,224,208,0.12);outline-offset:3px}
+  </style>
 </head>
 <body>
-  <!-- Header Section -->
-  <header class="header">
-    <div class="container">
-      <nav aria-label="Main navigation">
-        <h2>Portfolio</h2>
-        <ul>
-          <li><a href="#Home">Home</a></li>
-          <li><a href="#competence">Competence</a></li>
-          <li><a href="#Portfolio">Portfolio</a></li>
-          <li><a href="#contacts">Contacts</a></li>
-        </ul>
-      </nav>
-      <div class="header-text" id="Home">
-        <p>Student of Wikrama</p>
-        <h1>Hello, my name is Muhammad Arfan Naqi</h1>
+  <header>
+    <nav>
+      <div class="site-wrap nav-inner">
+        <div class="brand">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6" fill="url(#g)"/></svg>
+          <h1>M. Arfan Naqi</h1>
+        </div>
+
+        <div class="nav-links" role="navigation" aria-label="Main navigation">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#skills">Competence</a>
+          <a href="#portfolio">Portfolio</a>
+          <a href="#contacts">Contacts</a>
+        </div>
+
+        <div class="controls">
+          <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
+          <button class="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" title="Open menu">
+            <span data-feather="menu"></span>
+          </button>
+        </div>
       </div>
-    </div>
+    </nav>
   </header>
 
-  <!-- About Section -->
-  <section class="about" id="competence">
-    <div class="container">
-      <div class="row">
-        <figure class="alpha">
-          <img src="ed1e83c4-adcc-46b2-832c-d72fc7b35ff8.jpeg" alt="Muhammad Arfan Naqi">
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="site-wrap intro">
+        <p class="lead">Student of SMK Wikrama Bogor</p>
+        <h2>Halo — saya <strong>Muhammad Arfan Naqi</strong><br><small style="color:var(--muted);font-weight:600">PPLG • Web & Backend Enthusiast</small></h2>
+        <div class="cta">
+          <a class="btn-ghost" href="#portfolio">Lihat Portfolio</a>
+          <a class="btn-ghost" href="#contacts">Hubungi</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="site-wrap about-row">
+        <figure class="avatar">
+          <img src="ed1e83c4-adcc-46b2-832c-d72fc7b35ff8.jpeg" alt="Foto Muhammad Arfan Naqi" loading="lazy">
         </figure>
-        <article class="bravo">
-          <h1 class="sub-title">About Me</h1>
-          <p>
-            Hello, Nama saya Muhammad Arfan Naqi. Saya berumur 15 tahun, Saya lahir di kota BOGOR tanggal 12-5-08. Saya anak pertama dari 2 bersaudara, saya sekarang sekolah di Smk WIkrama Bogor Jurusan PPLG dan hobi saya adalah bermain bola dan sejarah.
-          </p>
-          <div class="tabs">
-            <button class="tab-links active" onclick="opentab('Competence')">Competence</button>
-            <button class="tab-links" onclick="opentab('Pendidikan')">Education</button>
+
+        <div class="about-card">
+          <h3>About Me</h3>
+          <p>Halo, nama saya <strong>Muhammad Arfan Naqi</strong>. Saya lahir di Bogor, 12 Mei 2008. Saat ini saya menempuh pendidikan di <a href="https://smkwikrama.sch.id" target="_blank" rel="noopener" style="color:var(--muted)">SMK Wikrama Bogor</a> jurusan PPLG. Hobi saya bermain sepak bola dan mempelajari sejarah.</p>
+
+          <div class="tabs" role="tablist" aria-label="Skill categories">
+            <button class="tab-btn is-active" data-target="skills">Competence</button>
+            <button class="tab-btn" data-target="education">Education</button>
           </div>
-          <div class="tab-contents active" id="Competence">
-            <ul>
-              <li><span onclick="scrollToElement('htmlContent')">HTML</span></li>
-              <li><span onclick="scrollToElement('phpContent')">PHP</span></li>
-              <li><span onclick="scrollToElement('cssContent')">CSS</span></li>
-              <li><span onclick="scrollToElement('jsContent')">JS</span></li>
-            </ul>
-          </div>   
-          <div class="tab-contents" id="Pendidikan">
-            <ul>
+
+          <div id="skills" class="tab-panel">
+            <div class="skills" aria-hidden="false">
+              <div class="skill">
+                <h4>HTML</h4>
+                <div class="bar" aria-hidden="true"><span data-width="95%" style="background:linear-gradient(90deg,var(--accent),var(--primary));"></span></div>
+              </div>
+              <div class="skill">
+                <h4>CSS</h4>
+                <div class="bar"><span data-width="88%" style="background:linear-gradient(90deg,var(--primary),#ff8aa6);"></span></div>
+              </div>
+              <div class="skill">
+                <h4>JavaScript / Vue</h4>
+                <div class="bar"><span data-width="78%" style="background:linear-gradient(90deg,#7ae7ff,#4dd0e1);"></span></div>
+              </div>
+              <div class="skill">
+                <h4>PHP / Laravel</h4>
+                <div class="bar"><span data-width="70%" style="background:linear-gradient(90deg,#ffd36b,#ff9a76);"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="education" class="tab-panel" hidden>
+            <ul style="margin-top:12px;color:var(--muted);">
               <li><a href="https://smkwikrama.sch.id" target="_blank" rel="noopener">SMK Wikrama Bogor</a></li>
               <li><a href="https://sekolah.data.kemdikbud.go.id/index.php/chome/profil/F0B12214-2CF5-E011-9D90-5FE3F9A6BD79" target="_blank" rel="noopener">SMP 1 Cigombong</a></li>
-              <li><a href="https://sekolahloka.com/data/sd-negeri-srogol-01/">SDN 1 Cigombong</a></li>
+              <li><a href="https://sekolahloka.com/data/sd-negeri-srogol-01/" target="_blank" rel="noopener">SDN 1 Cigombong</a></li>
             </ul>
           </div>
-        </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="section" aria-labelledby="portfolio-title">
+      <div class="site-wrap">
+        <h3 id="portfolio-title" style="color:var(--accent);margin-bottom:1rem">What is HTML, PHP, CSS, Vue and JS?</h3>
+        <div class="grid">
+          <article class="card" tabindex="0" data-title="HTML" data-desc="HyperText Markup Language — struktur dasar halaman web." data-img="250px-HTML5_logo_and_wordmark.png">
+            <img src="250px-HTML5_logo_and_wordmark.png" alt="Logo HTML5" loading="lazy">
+            <div class="meta">
+              <h4>HTML</h4>
+              <p>HyperText Markup Language — struktur dasar halaman web.</p>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="PHP" data-desc="Bahasa sisi-server untuk membuat konten dinamis dan berinteraksi dengan database." data-img="phpimages.png">
+            <img src="phpimages.png" alt="Logo PHP" loading="lazy">
+            <div class="meta">
+              <h4>PHP</h4>
+              <p>Bahasa sisi-server untuk membuat konten dinamis dan berinteraksi dengan database.</p>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="CSS" data-desc="Digunakan untuk mengatur tampilan (layout, warna, tipografi) halaman web." data-img="gambar-CSS.jpg">
+            <img src="gambar-CSS.jpg" alt="Logo CSS" loading="lazy">
+            <div class="meta">
+              <h4>CSS</h4>
+              <p>Digunakan untuk mengatur tampilan (layout, warna, tipografi) halaman web.</p>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="JavaScript" data-desc="Bahasa pemrograman yang membuat halaman menjadi interaktif." data-img="js.png">
+            <img src="js.png" alt="Logo JavaScript" loading="lazy">
+            <div class="meta">
+              <h4>JavaScript</h4>
+              <p>Bahasa pemrograman yang membuat halaman menjadi interaktif.</p>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Laravel" data-desc="Framework PHP modern untuk membangun aplikasi web yang rapi dan terstruktur." data-img="1200px-Laravel.png">
+            <img src="1200px-Laravel.png" alt="Logo Laravel" loading="lazy">
+            <div class="meta">
+              <h4>Laravel</h4>
+              <p>Framework PHP modern untuk membangun aplikasi web yang rapi dan terstruktur.</p>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Vue" data-desc="Framework progresif JavaScript untuk membangun antarmuka pengguna." data-img="Vue.js_Logo_2.png">
+            <img src="Vue.js_Logo_2.png" alt="Logo Vue.js" loading="lazy">
+            <div class="meta">
+              <h4>Vue</h4>
+              <p>Framework progresif JavaScript untuk membangun antarmuka pengguna.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="portfolio" class="section">
+      <div class="site-wrap">
+        <h3 style="color:var(--accent);margin-bottom:1rem">Beberapa project saya</h3>
+        <div class="grid">
+          <article class="card" tabindex="0" data-title="Clothing" data-desc="Website clothing responsif, dibangun dengan HTML & CSS." data-img="project1.png">
+            <img src="project1.png" alt="Project clothing website" loading="lazy">
+            <div class="meta"><h4>Clothing</h4><p>Website clothing responsif, dibangun dengan HTML & CSS.</p></div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Kalkulator" data-desc="Simple calculator menggunakan HTML, CSS dan PHP." data-img="kalkulator.png">
+            <img src="kalkulator.png" alt="Kalkulator" loading="lazy">
+            <div class="meta"><h4>Kalkulator</h4><p>Simple calculator menggunakan HTML, CSS dan PHP.</p></div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Form Data Siswa" data-desc="Aplikasi form data siswa untuk input & display, berbasis PHP." data-img="datasiswa.png">
+            <img src="datasiswa.png" alt="Form Data Siswa" loading="lazy">
+            <div class="meta"><h4>Form Data Siswa</h4><p>Aplikasi form data siswa untuk input & display, berbasis PHP.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal (initially hidden) -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-header">
+          <strong id="modalTitle">Title</strong>
+          <button id="modalClose" class="modal-close" aria-label="Close dialog">✕</button>
+        </div>
+        <div class="modal-body">
+          <img id="modalImg" src="" alt="">
+          <div class="modal-content">
+            <p id="modalDesc" style="color:var(--muted)"></p>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Portfolio Section -->
-  <section id="Portfolio">
-    <div class="container">
-      <h1 class="sub-title">What is HTML, PHP, CSS, Vue and JS?</h1>
-      <div class="work-list">
-        <!-- Work Items -->
-        <article class="work-item" id="htmlContent">
-          <img src="250px-HTML5_logo_and_wordmark.png" alt="HTML icon">
-          <div class="layer">
-            <h3>HTML</h3>
-            <p>HTML stands for HyperText Markup Language. It is the standard markup language for creating web pages.</p>
-          </div>
-        </article>
-        <article class="work-item" id="phpContent">
-          <img src="phpimages.png" alt="PHP icon">
-          <div class="layer">
-            <h3>PHP</h3>
-            <p>PHP is a server-side scripting language embedded in HTML for creating dynamic content and interacting with databases.</p>
-          </div>
-        </article>
-        <article class="work-item" id="cssContent">
-          <img src="gambar-CSS.jpg" alt="CSS icon">
-          <div class="layer">
-            <h3>CSS</h3>
-            <p>CSS (Cascading Style Sheets) is used to style the presentation of web pages written in HTML or XML.</p>
-          </div>
-        </article>
-        <article class="work-item" id="jsContent">
-          <img src="js.png" alt="JavaScript icon" height="225px">
-          <div class="layer">
-            <h3>JS</h3>
-            <p>JavaScript is a versatile programming language for making interactive and dynamic web pages.</p>
-          </div>
-        </article>
-        <article class="work-item" id="jsContent">
-          <img src="1200px-Laravel.png" alt="JavaScript icon" height="225px">
-          <div class="layer">
-            <h3>Laravel</h3>
-            <p>JavaScript is a versatile programming language for making interactive and dynamic web pages.</p>
-          </div>
-        </article>
-         <article class="work-item" id="htmlContent">
-          <img src="Vue.js_Logo_2.png" alt="HTML icon">
-          <div class="layer">
-            <h3>Vue</h3>
-            <p>progressive JavaScript framework used for building user interfaces and single-page applications.</p>
-          </div>
-        </article>
+    <section id="contacts" class="section contact-center">
+      <div class="site-wrap">
+        <h3 style="color:var(--accent)">Contact Me</h3>
+        <p style="color:var(--muted);max-width:620px;margin:0 auto 18px">Silakan hubungi saya melalui media sosial atau email. Klik ikon untuk membuka profil.</p>
+        <div class="socials">
+          <a href="https://www.instagram.com/m_arfan_naqi/" aria-label="Instagram" target="_blank" rel="noopener">
+            <span data-feather="instagram"></span>
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Projects Section -->
-<section id="Portfolio">
-  <div class="container">
-    <h1 class="sub-title">this is some of my projects</h1>
-    <div class="work-list">
-      <!-- Work Items -->
-      <article class="work-item" id="clothingContent">
-        <img src="project1.png" alt="Clothing website screenshot">
-        <div class="layer">
-          <h3>Clothing</h3>
-          <p>A responsive clothing website showcasing elegant gentleman attire, built with HTML and CSS.</p>
-        </div>
-      </article>
-      <article class="work-item" id="kalkulatorContent">
-        <img src="kalkulator.png" alt="Kalkulator screenshot">
-        <div class="layer">
-          <h3>Kalkulator</h3>
-          <p>A simple calculator for basic arithmetic operations, implemented using HTML, CSS, and PHP.</p>
-        </div>
-      </article>
-      <article class="work-item" id="formDataSiswaContent">
-        <img src="datasiswa.png" alt="Form Data Siswa screenshot">
-        <div class="layer">
-          <h3>Form Data Siswa</h3>
-          <p>A student data form application allowing input and display of student details, built with PHP and basic web technologies.</p>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
+  </main>
 
-  <!-- Contact Section -->
-  <section class="contact" id="contacts">
-    <h2>Contact Me</h2>
-    <p>Feel free to reach out via the following social media link:</p>
-    <div class="socials">
-      <a href="https://www.instagram.com/m_arfan_naqi/" target="_blank" aria-label="Instagram">
-        <i data-feather="instagram"></i>
-      </a>
-    </div>
-  </section>
+  <footer>
+    <div class="site-wrap"><small>© <span id="year"></span> Muhammad Arfan Naqi — Built with ❤️</small></div>
+  </footer>
 
-  <script src="123.js"></script>
+  <script>
+    feather.replace()
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Theme toggle: remember in localStorage
+    const themeToggle = document.getElementById('themeToggle')
+    const current = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+    if(current === 'light') document.documentElement.setAttribute('data-theme', 'light')
+    themeToggle.setAttribute('aria-pressed', String(current === 'light'))
+    themeToggle.textContent = current === 'light' ? '☀️' : '🌙'
+
+    themeToggle.addEventListener('click', ()=>{
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light'
+      if(isLight){ document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme','dark'); themeToggle.textContent='🌙'; themeToggle.setAttribute('aria-pressed','false') }
+      else { document.documentElement.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); themeToggle.textContent='☀️'; themeToggle.setAttribute('aria-pressed','true') }
+    })
+
+    // Basic entrance animations
+    gsap.from('nav', { y: -20, opacity: 0, duration: 0.7, ease: 'power2.out' })
+    gsap.from('.hero .lead', { y: 18, opacity: 0, duration: 0.6, delay: 0.15, ease: 'power2.out' })
+    gsap.from('.hero h2', { y: 28, opacity: 0, duration: 0.9, delay: 0.25, ease: 'power4.out' })
+    gsap.from('.hero .cta a', { y: 18, opacity: 0, duration: 0.6, stagger: 0.12, delay: 0.9, ease: 'power2.out' })
+
+    // Parallax: move hero-bg slowly with scroll
+    gsap.to('.hero-bg', {
+      yPercent: 18,
+      ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 }
+    })
+
+    // Parallax on card images (subtle) while scrolling
+    gsap.utils.toArray('.card img').forEach(img => {
+      gsap.to(img, { yPercent: -12, ease: 'none', scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 0.6 } })
+    })
+
+    // Reveal cards with stagger
+    gsap.utils.toArray('.card').forEach((card, i) => {
+      gsap.from(card, { scrollTrigger: { trigger: card, start: 'top 90%' }, y: 24, opacity: 0, duration: 0.7, delay: i * 0.05, ease: 'power2.out' })
+      card.addEventListener('mouseenter', () => gsap.to(card, { scale: 1.03, rotationZ: 0.6, duration: 0.22 }))
+      card.addEventListener('mouseleave', () => gsap.to(card, { scale: 1, rotationZ: 0, duration: 0.22 }))
+    })
+
+    // Skill bar animation
+    ScrollTrigger.create({ trigger: '#about', start: 'top 60%', onEnter: () => {
+      document.querySelectorAll('.bar > span').forEach((span, idx) => {
+        const width = span.getAttribute('data-width') || '80%'
+        gsap.to(span, { width: width, duration: 1.2, delay: idx * 0.09, ease: 'power2.out' })
+      })
+    }})
+
+    // Modal logic (accessible)
+    const modal = document.getElementById('modal')
+    const modalTitle = document.getElementById('modalTitle')
+    const modalImg = document.getElementById('modalImg')
+    const modalDesc = document.getElementById('modalDesc')
+    const modalClose = document.getElementById('modalClose')
+    let lastFocused = null
+
+    function openModal(data){
+      lastFocused = document.activeElement
+      modalTitle.textContent = data.title
+      modalImg.src = data.img
+      modalImg.alt = data.title
+      modalDesc.textContent = data.desc
+      modal.classList.add('open')
+      modal.setAttribute('aria-hidden','false')
+      modalClose.focus()
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeModal(){
+      modal.classList.remove('open')
+      modal.setAttribute('aria-hidden','true')
+      document.body.style.overflow = ''
+      if(lastFocused) lastFocused.focus()
+    }
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', ()=> openModal({ title: card.dataset.title, img: card.dataset.img, desc: card.dataset.desc }))
+      card.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal({ title: card.dataset.title, img: card.dataset.img, desc: card.dataset.desc }) } })
+    })
+
+    modalClose.addEventListener('click', closeModal)
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal() })
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal() })
+
+    // focus trap basic: keep focus inside modal when open
+    modal.addEventListener('keydown', (e)=>{
+      if(e.key !== 'Tab' || !modal.classList.contains('open')) return
+      const focusable = modal.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])')
+      const first = focusable[0]
+      const last = focusable[focusable.length -1]
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus() }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus() }
+    })
+
+    // mobile menu toggle
+    const toggle = document.querySelector('.menu-toggle')
+    const navLinks = document.querySelector('.nav-links')
+    toggle && toggle.addEventListener('click', ()=>{
+      const expanded = toggle.getAttribute('aria-expanded') === 'true'
+      toggle.setAttribute('aria-expanded', String(!expanded))
+      navLinks.style.display = expanded ? 'none' : 'flex'
+    })
+
+    // smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const href = a.getAttribute('href')
+        if(href.length>1){ e.preventDefault(); const el = document.querySelector(href); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}) }
+      })
+    })
+
+    document.getElementById('year').textContent = new Date().getFullYear()
+  </script>
 </body>
 </html>
